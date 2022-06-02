@@ -1,0 +1,19 @@
+how to get current user in IdentityUser 
+{
+    var user = this.User;
+    var User = await userManager.GetUserAsync(user);
+}
+
+how to save image to Database 
+{
+       <--> in Model
+       IFormFile Image{get;set;}
+       <--> in Controller
+       using(var ms = new MemoryStream())
+                {
+                    report.Image.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    report.Img = fileBytes;
+                }
+            
+}

@@ -1,0 +1,906 @@
+﻿@model IEnumerable<IEnumerable<GpProject.Models.Report>>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = "Home Page";
+    var user = await UserManager.GetUserAsync(User);
+
+    var Userbase64_2 = "";
+    var UserimgSrc_2 = "";
+    @if (user.Img != null)
+    {
+        Userbase64_2 = Convert.ToBase64String(user.Img);
+        UserimgSrc_2 = String.Format("data:image/png;base64,{0}", Userbase64_2);
+    }
+}
+
+
+@{
+    ViewData["Title"] = "ShowMatchedReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Prvorder = Convert.ToInt16(ViewData["Order"]) - 1;
+    var Nxorder = Convert.ToInt16(ViewData["Order"]) + 1;
+}
+
+
+<div class="form-popup" id="myForm">
+    <form action="/action_page.php" class="form-container">
+        <h1>Thread Reply</h1>
+        <div class="w-100 CommentsThread">
+
+        </div>
+
+
+
+        <textarea rows="4" cols="50" type="text" placeholder="Replay" class="ReplyField form-control rounded-corner mb-1" name="reply"></textarea>
+
+
+
+        <button type="button" class="btn btn-primary Reply">Reply</button>
+        <button type="button" class="btn cancel closeForm">Close</button>
+    </form>
+</div>
+
+<div class="Editform-popup" id="EditForm">
+    <form action="/action_page.php" class="form-container">
+
+
+
+
+
+        <textarea rows="4" cols="50" type="text" class="EditField form-control rounded-corner mb-1" name="reply"></textarea>
+
+
+
+        <button type="button" class="btn btn-primary Edit">Edit</button>
+        <button type="button" class="btn cancel closeForm">Close</button>
+    </form>
+</div>
+
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @if (Convert.ToInt16(ViewData["Order"]) == 1)
+        {
+            <li class="page-item disabled "><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="@Prvorder">Previous</a></li>
+
+        }
+        else
+        {
+
+            <li class="page-item  "><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="@Prvorder">Previous</a></li>
+
+        }
+        @if (Convert.ToInt16(ViewData["Order"]) == 1)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="1">1</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="1">1</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 2)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="2">2</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="2">2</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 3)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="3">3</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="3">3</a></li>
+        }
+
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 4)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="4">4</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="4">4</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 5)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="5">5</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="5">5</a></li>
+        }
+
+
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 6)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="6">6</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="6">6</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 7)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="7">7</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="7">7</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 8)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="8">8</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="8">8</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 9)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="9">9</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="9">9</a></li>
+        }
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 10)
+        {
+            <li class="page-item active"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="10">10</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="10">10</a></li>
+        }
+
+
+        @if (Convert.ToInt16(ViewData["Order"]) == 10)
+        {
+            <li class="page-item disabled "><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="@Nxorder">Next</a></li>
+
+        }
+        else
+        {
+
+            <li class="page-item  "><a class="page-link" asp-action="ShowMatchedReport" asp-route-Id="@ViewData["Ids"]" asp-route-order="@Nxorder">Next</a></li>
+
+        }
+    </ul>
+</nav>
+
+@foreach (var reports in Model)
+{
+
+
+    <div class="row">
+        @foreach (var report in reports)
+        {
+            <div class="col-lg-6 col-sm-12 col-md-9">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="media mb-3" style="border-radius:50%">
+                            <a asp-action="Profile" asp-route-id="@report.User.Id" asp-controller="User">
+                                @if (report.User.Img == null)
+                                {
+                                    <img src="~/vendor/download.png" class="d-block ui-w-40 rounded-circle" alt="">
+                                }
+                                else
+                                {
+
+                                    var Userbase64 = Convert.ToBase64String(report.User.Img);
+                                    var UserimgSrc = String.Format("data:image/png;base64,{0}", Userbase64);
+                                    <img src="@UserimgSrc" class="d-block ui-w-40 rounded-circle" style="height:2.5rem" alt="">
+                                }
+
+                            </a>
+                            <a asp-action="Profile" asp-route-id="@report.User.Id" asp-controller="User" style="text-decoration:none" class="media-body ml-3">
+
+                                @report.User.UserName
+                                <div class="text-muted small">@report.date.Date</div>
+
+                            </a>
+                            @if (user.Id == report.User.Id)
+                            {
+                                <div class="nav-item dropdown no-arrow">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="mr-2 d-none d-lg-inline text-gray-600 small"><i class="fas fa-ellipsis-h"></i></span>
+
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                         aria-labelledby="userDropdown">
+
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Edit
+                                        </a>
+                                        <a class="dropdown-item js-delete" href="javascript:;" data-id="@report.Id">
+
+                                            <i class="fas fa-solid fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+
+
+                                            Delete
+                                        </a>
+
+                                    </div>
+
+
+                                    <!-- Dropdown - User Information -->
+                                </div>
+                            }
+                        </div>
+
+
+
+
+
+
+                        <div class="Describtion">
+
+                            @if (report.FoundPerson)
+                            {
+                                <p class="Found "><span class="bg-primary " style="font-weight: bold;padding:0.3rem;color:white; border-radius:0.5rem">Found</span></p>
+                            }
+                            else
+                            {
+                                <p class="Lost "><span style="font-weight: bold; padding: 0.3rem; color: white; background-color: red; border-radius: 0.5rem">Lost</span></p>
+                            }
+
+                            @if (report.Famle)
+                            {
+                                <p class="m-0">Gender : Famle</p>
+                            }
+                            else
+                            {
+                                <p class="m-0">Gender : Male</p>
+                            }
+
+                            <p class="m-0"> First Name : @report.FirstName</p>
+                            <p class="m-0"> Last Name : @report.LastName</p>
+                            <p class="m-0"> Age : @report.Age</p>
+                            <p class="m-0"> Country : @report.Country</p>
+                            <p class="m-0"> City : @report.City</p>
+                            <p class="m-0"> District : @report.District</p>
+                        </div>
+                        @{
+                            var base64 = Convert.ToBase64String(report.Img);
+                            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                        }
+                    <div style="max-height:30rem;max-width:30rem;">
+                        <a href="javascript:void(0)" class="">
+                            <img src="@imgSrc" style="max-height:30rem;width:30rem;" alt="">
+                        </a>
+                    </div>
+
+                    </div>
+                    <div class="card-footer" style="background-color:white">
+
+                        @if (report.CommentCount > 0)
+                        {
+                            <a href="javascript:void(0)" data-id="@report.Id" style="display:block;" class="text-muted ml-3 Comment">
+                                <strong>@report.CommentCount</strong> <small> Comments</small>
+                            </a>
+                            @if (report.CommentCount > 3)
+                            {
+                                <a href="javascript:void(0)" data-id="@report.Id" class="none text-muted ml-3 viewMoreComments">
+                                    <strong>View more comments</strong>
+                                </a>
+                            }
+                        }
+                        <div id="@report.Id" class="comments">
+
+                        </div>
+
+                        <div class="timeline-comment-box">
+
+
+                            <div class="user">
+                                @if (UserimgSrc_2 == "")
+                                {
+
+                                    <img style="object-fit:cover; width:100%;height:100%;" src="~/vendor/download.png">
+                                }
+                                else
+                                {
+                                    <img style="object-fit:cover; width:100%;height:100%;" src="@UserimgSrc_2">
+                                }
+
+
+                            </div>
+
+
+                            <div class="input">
+                                <form action="">
+                                    <div class="input-group">
+                                        <textarea type="text" rows="4" cols="50" id="commentData" class="form-control rounded-corner" placeholder="Write a comment..."></textarea>
+                                        <span class="input-group-btn p-l-10 mt-auto">
+                                            <button class="btn btn-primary f-s-12 rounded-corner " data-id="@report.Id" id="addcomment" type="button">Comment</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+
+
+
+@section Scripts{
+    <script>
+
+        var userName = '@user.UserName';
+        var UserimgSrc_2 = '@UserimgSrc_2';
+        var UserId = '@user.Id';
+        var from = 0;
+        var to = 0;
+        var CommmentsStatus = false;
+        var GetComment = null;
+        $(document).ready(function () {
+            $(".js-delete").on("click", function () {
+                var btn = $(this);
+                console.log("done");
+                bootbox.confirm({
+                    message: "This is a confirm with custom button text and color! Do you like it?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: "/api/report/?id=" + btn.data("id"),
+                                method: "DELETE",
+                                success: function () {
+                                    let text = document.getElementsByClassName("row");
+                                    btn.parentsUntil(text).fadeOut();
+                                },
+                                error: function () {
+                                    alert("error happend");
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+            $("#addcomment").on("click", function () {
+                var comment = document.getElementById("commentData").value;
+                document.getElementById("commentData").value = "";
+                var json = {
+                    UserId: UserId,
+                    ReportId: $(this).attr("data-id"),
+                    CommentData: comment
+                }
+                $.ajax({
+                    url: "https://localhost:44365/api/report",
+                    method: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+
+                    success: function (data) {
+                        var div = $('<div class="row m-auto CommentContiner"></div>');
+                        var div1 = $('<div class="timeline-comment-box col-10"></div>');
+                        var div2 = $('<div class="user"></div>');
+                        var div3 = $('<div class="input w-60 mw-100 h-100 pl-3 pt-1 pb-1 pr-3"  style="background-color: #f0f2f5;border-radius:1rem;"></div>');
+                        var a = $('<a style="cursor:pointer;"></a>');
+                        var p1 = $('<p class="mb-1 mt-2 w-100" style="font-weight:bold;color:black">' + userName + '</p>');
+                        var p2 = $('<p class="mb-2 mw-100 w-100" style="color:black;">' + comment + '</p>');
+                        var img = $('<img  style="object-fit:cover; width:100%;height:100%;" class="w-100" src="/vendor/download.png"">');
+                        if (UserimgSrc_2 != "") {
+                            console.log(UserimgSrc_2);
+                            img = $('<img  class="w-100" src="' + UserimgSrc_2 + '">');
+
+                        }
+
+                        div2.append(img);
+                        a.append(p1);
+                        div3.append(a);
+                        div3.append(p2);
+                        div1.append(div2);
+                        div1.append(div3);
+                        div.append(div1);
+                        var menu = CommentMenu($(this).attr("data-id"));
+                        div.append(menu);
+                        $(".comments").append(div);
+                        alert($(this).attr("data-id"));
+
+
+                    },
+                    error: function () {
+                        alert("error happend");
+                    }
+                });
+
+
+
+
+
+
+            });
+
+            function DeleteComment() {
+
+                var btn = $(this);
+
+                bootbox.confirm({
+                    message: "This is a confirm with custom button text and color! Do you like it?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: "/api/report/DeleteComment/?id=" + btn.data("id"),
+                                method: "DELETE",
+                                success: function () {
+
+                                    btn.parent().parent().parent().fadeOut("slow");
+                                },
+                                error: function () {
+                                    alert("error happend");
+                                }
+                            });
+                        }
+                    }
+                });
+            };
+
+
+             GetComment = function () {
+
+                $.ajax({
+                    url: "https://localhost:44365/api/Report/GetComment?from=1&to=4&reportId=" + $(this).attr("data-id"),
+                    method: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+
+
+                    success: function (data) {
+
+                        $('.viewMoreComments').removeClass('none').addClass('d-inline-block');
+                        $('.Comment').removeClass('Comment').addClass('Close');
+                        $('.comments').removeClass("none");
+
+                        for (var key in data) {
+                            var div1 = $('<div class="timeline-comment-box "></div>');
+                            var div2 = $('<div class="user"></div>');
+                            var div3 = $('<div class="input w-50 mw-100 h-50 pl-3 pt-1 pb-1 pr-3"  style="background-color: #f0f2f5;border-radius:1rem;"></div>');
+                            var a = $('<a style="cursor:pointer;"></a>');
+                            var p1 = $('<p class="mb-1 mt-2 w-100" style="font-weight:bold;color:black">' + data[key].userName + '</p>');
+                            var p2 = $('<p class="mb-2 mw-100 w-100" style="color:black;">' + data[key].commentData + '</p>');
+                            var img = $('<img  class="w-100" src="data:image/gif;base64,' + data[key].img + '">');
+                            div2.append(img);
+                            a.append(p1);
+                            div3.append(a);
+                            div3.append(p2);
+                            div1.append(div2);
+                            div1.append(div3);
+                            $(".comments").append(div1);
+
+
+                        }
+                    },
+                    error: function () {
+                        alert("error happend");
+                    }
+                });
+            }
+            var CloseComment = function () {
+                $('.Close').removeClass('Close').off().addClass('Comment').on(GetComment);
+                $('.viewMoreComments').removeClass('d-inline-block').addClass('none');
+                $('.comments').addClass("none");
+            }
+
+
+
+            $(".Comment").on("click", function () {
+
+                if (CommmentsStatus) {
+                    CommmentsStatus = false;
+                    var length = document.getElementsByClassName("comments")[0].children.length
+                    for (index = length-1; index >= 0; index--) {
+
+                        document.getElementsByClassName("comments")[0].children[index].remove();
+                    }
+                }
+                else {
+
+                    var ID = $(this).attr("data-id")
+                    CommmentsStatus = true;
+                    $.ajax({
+                        url: "https://localhost:44365/api/Report/GetComment?from=1&to=4&reportId=" + $(this).attr("data-id"),
+                        method: "GET",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+
+
+                        success: function (data) {
+
+                            $('.viewMoreComments').removeClass('none').addClass('d-inline-block');
+                            $('.Comment').removeClass('Comment');
+                            $('.comments').removeClass("none");
+                            from = 1;
+                            to = 4;
+                            for (var key in data) {
+                                var div = $('<div class="row m-auto CommentContiner" id="' + data[key].id + '"></div>');
+                                var div1 = $('<div class="timeline-comment-box col-10"></div>');
+                                var div2 = $('<div class="user"></div>');
+                                var div3 = $('<div class="input w-60 mw-100 h-100 pl-3 pt-1 pb-1 pr-3"  style="background-color: #f0f2f5;border-radius:1rem;"></div>');
+                                var a = $('<a style="cursor:pointer;"></a>');
+                                var p1 = $('<p class="mb-1 mt-2 w-100" style="font-weight:bold;color:black">' + data[key].userName + '</p>');
+                                var p2 = $('<p class="mb-2 mw-100 w-100" style="color:black;">' + data[key].commentData + '</p>');
+                                var img = $('<img  style="object-fit:cover; width:100%;height:100%;" class="w-100" src="/vendor/download.png"">');
+                                if (data[key].img != null) {
+                                    var img = $('<img style="object-fit:cover; width:100%;height:100%;"  class="w-100" src="data:image/gif;base64,' + data[key].img + '">');
+                                }
+
+                                //Comment menu
+
+
+
+                                // end
+                                div2.append(img);
+                                a.append(p1);
+                                div3.append(a);
+                                div3.append(p2);
+                                div1.append(div2);
+                                div1.append(div3);
+                                div.append(div1);
+                                var menu = CommentMenu(data[key].id);
+                                div.append(menu);
+
+                                $("#" + ID).append(div);
+
+
+                            }
+                        },
+                        error: function () {
+                            alert("error happend");
+                        }
+                    });
+                }
+            });
+
+
+
+            function CommentMenu(id) {
+                var div1 = $('<div class="nav-item dropdown no-arrow m-auto"></div>');
+                //first box
+                var a1 = $('<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></a>');
+                var span1 = $('<span class="mr-2 d-none d-lg-inline text-gray-600 small"></span>');
+                var i1 = $('<i class="fas fa-ellipsis-h"></i>');
+                 span1.append(i1);
+                 a1.append(span1);
+                //end
+                //sec box
+                var div2 = $('<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown"></div>');
+                var a2 = $('<a class="dropdown-item" href="javascript:;" data-id="' + id + '"></a>');
+                var i2 = $('<i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>');
+                a2.append(i2);
+                a2.click(openEditForm);
+                a2.append("Edit");
+                var a3 = $('<a class="dropdown-item js-DeleteComment" href="javascript:;" data-id="' + id + '"></a>');
+                var i3 = $('<i class="fas fa-solid fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>');
+
+                a3.append(i3);
+                a3.append("Delete");
+                a3.click(DeleteComment);
+                var a4 = $('<a class="dropdown-item " href="javascript:;" data-id="' + id + '"></a>');
+                var i4 = $('<i class="fas fa fa-reply fa-sm fa-fw mr-2 text-gray-400"></i>');
+                a4.append(i4);
+                a4.click(openForm);
+                a4.append("Reply");
+                 div2.append(a2);
+                div2.append(a3);
+                div2.append(a4);
+                //end
+                div1.append(a1);
+                 div1.append(div2);
+                return div1;
+            }
+
+
+
+
+
+
+
+            $('.viewMoreComments').on("click", function () {
+
+                to += 3;
+                from += 3;
+
+                $.ajax({
+                    url: "https://localhost:44365/api/Report/GetComment?from=" + from + "&to=" + to + "&reportId=" + $(this).attr("data-id"),
+                    method: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+
+
+                    success: function (data) {
+                        console.log(data);
+                        $('.viewMoreComments').removeClass('none').addClass('d-inline-block');
+                        $('.Comment').removeClass('Comment').off().addClass('Close');
+                        $('.comments').removeClass("none");
+
+                        for (var key in data) {
+                            var div1 = $('<div class="timeline-comment-box "></div>');
+                            var div2 = $('<div class="user"></div>');
+                            var div3 = $('<div class="input w-50 mw-100 h-50 pl-3 pt-1 pb-1 pr-3"  style="background-color: #f0f2f5;border-radius:1rem;"></div>');
+                            var a = $('<a style="cursor:pointer;"></a>');
+                            var p1 = $('<p class="mb-1 mt-2 w-100" style="font-weight:bold;color:black">' + data[key].userName + '</p>');
+                            var p2 = $('<p class="mb-2 mw-100 w-100" style="color:black;">' + data[key].commentData + '</p>');
+                            var img = $('<img  style="object-fit:cover; width:100%;height:100%;" class="w-100" src="/vendor/download.png"">');
+                            if (data[key].img != null) {
+                                var img = $('<img style="object-fit:cover; width:100%;height:100%;"  class="w-100" src="data:image/gif;base64,' + data[key].img + '">');
+                            }
+
+
+                            div2.append(img);
+                            a.append(p1);
+                            div3.append(a);
+                            div3.append(p2);
+                            div1.append(div2);
+                            div1.append(div3);
+                            $(".comments").append(div1);
+
+
+                        }
+                        if (data[0].full == true) {
+                            $('.viewMoreComments').removeClass('d-inline-block').addClass('none');
+                        }
+                    },
+                    error: function () {
+                        alert("error happend");
+                    }
+                });
+
+
+            })
+            function openForm() {
+
+                var btn = $(this);
+                btn.parent().parent().parent().attr("data-id", btn.attr("data-id"));
+                $(".CommentsThread").append(btn.parent().parent().parent())
+                var clone = btn.parent().parent().parent().clone();
+
+                document.getElementById("myForm").style.display = "block";
+                $.ajax({
+                    url: "https://localhost:44365/api/report/GetReply?id=" + $(".CommentContiner").attr("data-id"),
+                    method: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        console.log(data);
+                        for (var index in data) {
+
+
+                            var clone = $(".CommentContiner").clone();
+                            clone.attr("id", "reply" + data[index].id)
+                            clone.children().eq(1).children().eq(1).children().eq(2).remove();
+                            clone.children().eq(1).children().eq(1).children().eq(0).attr("data-id", data[index].id);
+                            clone.children().eq(1).children().eq(1).children().eq(1).attr("data-id", data[index].id);
+                            clone.children().eq(1).children().eq(1).children().eq(1).click(DeleteReply);
+                            clone.children().eq(1).children().eq(1).children().eq(0).click(openEditForm);
+
+                            if (data[index].img != null) {
+
+                                clone.children().eq(0).children().eq(0).children().eq(0).attr("src", "data:image/gif;base64," + data[index].img);
+
+                            } else {
+
+                                clone.children().eq(0).children().eq(0).children().eq(0).attr("src", "/vendor/download.png");
+                            }
+
+                            console.log(clone.children().eq(0).children().eq(1).children().eq(0).children().eq(0));
+                            console.log(clone.children().eq(0).children().eq(1).children().eq(1));
+                            clone.children().eq(0).children().eq(1).children().eq(0).children().eq(0).text(data[index].userName);
+                            clone.children().eq(0).children().eq(1).children().eq(1).text(data[index].commentData);
+                            $(".CommentsThread").append(clone);
+                            if (index == 3) {
+                                break;
+                            }
+                        }
+
+                    },
+                    error: function () {
+                        alert("error happend");
+                    }
+                });
+
+
+            }
+            $(".Reply").on("click", function () {
+                console.log($(".ReplyField").val());
+                var reply = $(".ReplyField").val()
+                var json = {
+                    UserId: UserId,
+                    CommentId: $(".CommentContiner").attr("data-id"),
+                    CommentData: reply
+                }
+                $.ajax({
+                    url: "https://localhost:44365/api/report/AddReply",
+                    method: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        console.log(UserimgSrc_2);
+                        var clone = $(".CommentContiner").clone();
+                        clone.attr("id", "reply" + data.id)
+                        clone.children().eq(1).children().eq(1).children().eq(2).remove();
+                        clone.children().eq(1).children().eq(1).children().eq(0).attr("data-id", data.id);
+                        clone.children().eq(1).children().eq(1).children().eq(1).attr("data-id", data.id);
+                        clone.children().eq(1).children().eq(1).children().eq(1).click(DeleteReply);
+                        clone.children().eq(1).children().eq(1).children().eq(0).click(openEditForm);
+
+                        if (UserimgSrc_2) {
+
+                            clone.children().eq(0).children().eq(0).children().eq(0).attr("src", UserimgSrc_2);
+                        }else {
+
+                            clone.children().eq(0).children().eq(0).children().eq(0).attr("src", "/vendor/download.png");
+                        }
+
+                        console.log(clone.children().eq(0).children().eq(1).children().eq(0).children().eq(0));
+                        console.log(clone.children().eq(0).children().eq(1).children().eq(1));
+                        clone.children().eq(0).children().eq(1).children().eq(0).children().eq(0).text(userName);
+                        clone.children().eq(0).children().eq(1).children().eq(1).text(reply);
+                        $(".CommentsThread").append(clone);
+                    },
+                    error: function () {
+                        alert("error happend");
+                    }
+                });
+            });
+
+
+
+            function DeleteReply() {
+                alert("fvf");
+                var btn = $(this);
+
+                bootbox.confirm({
+                    message: "This is a confirm with custom button text and color! Do you like it?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: "/api/report/DeleteReply/?id=" + btn.data("id"),
+                                method: "DELETE",
+                                success: function () {
+
+                                    btn.parent().parent().parent().fadeOut("slow");
+                                },
+                                error: function () {
+                                    alert("error happend");
+                                }
+                            });
+                        }
+                    }
+                });
+            };
+
+
+
+            function openEditForm() {
+
+                var btn = $(this);
+                $(".Editform-popup").attr("data-id", btn.attr("data-id"));
+                document.getElementById("EditForm").style.display = "block";
+            }
+
+
+            $(".Edit").on("click", function () {
+                console.log($(".EditField").val());
+                var reply = $(".EditField").val()
+                var json = {
+                    UserId: UserId,
+                    Id: $(".Editform-popup").attr("data-id"),
+                    CommentData: reply
+
+                }
+                $.ajax({
+                    url: "https://localhost:44365/api/report/EditComment",
+                    method: "PUT",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $("#" + $(".Editform-popup").attr("data-id")).children().eq(0).children().eq(1).children().eq(1).text(data.commentData);
+
+                        closeEditForm();
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "https://localhost:44365/api/report/EditReply",
+                            method: "PUT",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(json),
+                            success: function (data) {
+                                $("#reply" + $(".Editform-popup").attr("data-id")).children().eq(0).children().eq(1).children().eq(1).text(data.commentData);
+                                closeEditForm();
+
+                            },
+                            error: function () {
+                                alert("error happend");
+                            }
+                        });
+                    }
+                });
+            });
+
+
+            function closeForm () {
+                document.getElementById("myForm").style.display = "none";
+
+
+                document.getElementsByClassName("CommentsThread")[0].innerHTML = "";
+            }
+            function closeEditForm() {
+                document.getElementById("EditForm").style.display = "none";
+            }
+            $(".closeForm").on("click", function () {
+                document.getElementById("myForm").style.display = "none";
+
+
+                document.getElementsByClassName("CommentsThread")[0].innerHTML = "";
+            });
+
+            $(".closeEditForm").on("click", function () {
+
+                document.getElementById("EditForm").style.display = "none";
+
+
+            });
+
+        })
+
+
+    </script>
+}

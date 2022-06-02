@@ -1,0 +1,86 @@
+var url = "http://localhost:5000/upload2";
+                var ValidtionURl = "http://localhost:5000/CheckValidation";
+                using (var httpClient = new HttpClient())
+                {
+                    var reportType = 0;
+                    if (report.FoundPerson)
+                    {
+                        reportType = 1;
+                    }
+                    else
+                    {
+                        reportType = 0;
+                    }
+                    using (var client = new HttpClient())
+                    {
+                        using (var content = new MultipartFormDataContent())
+                        {
+                            var data = new ImageProccessingRVM() { reportType = reportType, UserId = User.Id };
+
+                            var fileContent = new ByteArrayContent(report.Img);
+                            fileContent.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") { Name = "image", FileName = report.Image.FileName };
+                            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                            content.Add(fileContent);
+                            var result = client.PostAsync(ValidtionURl, content).Result;
+                            if (result.StatusCode != System.Net.HttpStatusCode.Created)
+                            {
+                                var error = await result.Content.ReadAsStringAsync();
+                                
+                                error.Replace(@"\", "");
+                                error.Replace(@"\n", "");
+                                ModelState.AddModelError("", error);
+                                return View(report);
+
+                            }
+                            DbContext.Add(report);
+                            await DbContext.SaveChangesAsync();
+                            using (var content2 = new MultipartFormDataContent())
+                            {
+                                var myContent = JsonConvert.SerializeObject(data.reportType);
+                                var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+                                var Data = new ByteArrayContent(buffer);
+                                Data.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data") { Name = "reportType" };
+                                content2.Add(Data);
+
+
+                                myContent = JsonConvert.SerializeObject(data.UserId);
+                                buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+                                Data = new ByteArrayContent(buffer);
+                                Data.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data") { Name = "UserId" };
+                                content2.Add(Data);
+
+
+
+                                myContent = JsonConvert.SerializeObject(report.Id);
+                                buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+                                Data = new ByteArrayContent(buffer);
+                                Data.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data") { Name = "reportId" };
+                                content2.Add(Data);
+
+                                fileContent = new ByteArrayContent(report.Img);
+                                fileContent.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") { Name = "image", FileName = report.Image.FileName };
+                                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                                content2.Add(fileContent);
+
+                                result = client.PostAsync(url, content2).Result;
+                                if (result.StatusCode == System.Net.HttpStatusCode.Created)
+                                {
+                                    var m = await result.Content.ReadAsStringAsync();
+                                    report.ImageDataId = Int32.Parse(m);
+                                    await DbContext.SaveChangesAsync();
+                                    return RedirectToAction("Index");
+                                }
+                                else
+                                {
+                                    var m = await result.Content.ReadAsStringAsync();
+                                    myContent = JsonConvert.SerializeObject(m);
+                                    ModelState.AddModelError("", myContent);
+                                }
+                            }
+                            
+
+                        }
+                    }
+
+                    
+                }

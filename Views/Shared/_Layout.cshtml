@@ -1,0 +1,534 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using System.Text
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+@{
+    User user = new User();
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GpProject</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/Profile.css" />
+    <link rel="stylesheet" href="~/css/sb-admin-2.css" />
+    <link rel="stylesheet" href="~/vendor/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/ReportStyle.css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+
+
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+    <link rel="stylesheet" href="~/css/leaflet.css" />
+    
+</head>
+<body>
+    <div id="wrapper">
+        @if (SignInManager.IsSignedIn(User))
+        {
+
+
+            <!-- Sidebar -->
+            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+                <!-- Sidebar - Brand -->
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                    <div class="sidebar-brand-icon rotate-n-15">
+                        <i class="fas fa-handshake"></i>
+
+                    </div>
+                    <div class="sidebar-brand-text mx-3"><sup>2</sup>gether</div>
+                </a>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0">
+
+                <!-- Nav Item - Dashboard -->
+
+                <li class="nav-item active">
+                    <a class="nav-link" asp-action="EditProfile" asp-controller="User">
+                        <i class="fas fa-fw fa-edit"></i>
+                        <span>Edit Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" asp-action="Profile" asp-controller="User">
+                        <i class="fas fa-fw fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-action="ManageUsers" asp-controller="Admin">
+                            <i class="fas fa-fw fa-user"></i>
+                            <span>Manage Users</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-action="ManageUsers" asp-controller="Admin">
+                            <i class="fas fa-fw fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                }
+                <hr class="sidebar-divider">
+                <li class="nav-item active">
+                    <a class="nav-link" asp-controller="User" asp-action="CreateReport">
+                        <i class="fas fa-fw fa-plus-square"></i>
+                        <span>Generate Report</span>
+                    </a>
+                </li>
+
+
+
+
+                <hr class="sidebar-divider">
+                <!-- Heading -->
+                <!-- Nav Item - Pages Collapse Menu -->
+                <!-- Nav Item - Utilities Collapse Menu -->
+                <!-- Divider -->
+                <!-- Nav Item - Pages Collapse Menu -->
+                <!-- Nav Item - Charts -->
+                <!-- Nav Item - Tables -->
+                <!-- Divider -->
+                <li class="nav-item active">
+
+
+                    <a asp-controller="Account" asp-action="LogOut" class="nav-link">
+                        <i class="fas fa-sign-out-alt "></i>
+                        <span>LogOut</span>
+                    </a>
+
+                </li>
+                <hr class="sidebar-divider d-none d-md-block">
+
+                <!-- Sidebar Toggler (Sidebar) -->
+                <div class="text-center d-none d-md-inline">
+                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+                </div>
+
+                <!-- Sidebar Message -->
+
+
+            </ul>
+
+        }
+
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+                @if (SignInManager.IsSignedIn(User))
+                {
+
+                    user = await UserManager.GetUserAsync(User);
+
+                    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+
+                        <!-- Sidebar Toggle (Topbar) -->
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <div class="nav-item dropdown no-arrow">
+                            <div class="nav-link dropdown-toggle">
+
+                                <a asp-controller="User" asp-action="Index" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-home fa-lg text-white-50"></i></a>
+                            </div>
+                        </div>
+                        <!-- Topbar Search -->
+                        <form asp-controller="User" asp-action="Search" class="d-none d-sm-inline-block form-inline  ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                       aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+
+
+                        <!-- Topbar Navbar -->
+                        <ul class="navbar-nav ml-auto">
+
+                            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                            <li class="nav-item dropdown no-arrow d-sm-none">
+                                <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-search fa-fw"></i>
+                                </a>
+                                <!-- Dropdown - Messages -->
+                                <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                     aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto w-100 navbar-search">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control bg-light border-0 small"
+                                                   placeholder="Search for..." aria-label="Search"
+                                                   aria-describedby="basic-addon2">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="button">
+                                                    <i class="fas fa-search fa-sm"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+
+
+
+
+
+                            <!-- Nav Item - Alerts -->
+
+
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <a class="nav-link dropdown-toggle getNotification" href="#" id="alertsDropdown" role="button"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-bell fa-fw"></i>
+                                    <!-- Counter - Alerts -->
+                                    <span class="badge badge-danger badge-counter" id="notifCount"></span>
+                                </a>
+                                <!-- Dropdown - Alerts -->
+                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in appends"
+                                     style="max-height:37rem;overflow-y:scroll" aria-labelledby="alertsDropdown">
+                                    <h6 class="dropdown-header">
+                                        Alerts Center
+                                    </h6>
+                                    <a class="dropdown-item text-center small text-gray-500" id="before" href="#">Show All Alerts</a>
+                                </div>
+                            </li>
+
+
+
+                            <!-- Nav Item - Messages -->
+
+
+                            <div class="topbar-divider d-none d-sm-block"></div>
+
+                            <!-- Nav Item - User Information -->
+
+
+                            <div class="nav-item dropdown no-arrow">
+                                <a class="nav-link dropdown-toggle" asp-action="Profile" asp-controller="User" id="userDropdown" role="button">
+
+                                    @if (user.Img == null)
+                                    {
+                                        <img src="~/vendor/download.png" class="d-block mr-1 ui-w-40 rounded-circle" alt="">
+                                    }
+                                    else
+                                    {
+                                        var Userbase64 = Convert.ToBase64String(user.Img);
+                                        var UserimgSrc = String.Format("data:image/png;base64,{0}", Userbase64);
+                                        <img src="@UserimgSrc" class="d-block ui-w-40 mr-1 rounded-circle" style="height:2.5rem" alt="">
+                                    }
+                                    <span class="mr-2 d-none d-lg-inline  text-gray-600 small">  @user.UserName</span>
+                                </a>
+                                <!-- Dropdown - User Information -->
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                     aria-labelledby="userDropdown">
+
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="LogOut">
+                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Logout
+                                    </a>
+                                </div>
+                            </div>
+
+
+                        </ul>
+
+                    </nav>
+
+                }
+                <!-- Topbar -->
+
+
+
+
+
+                <div class="container">
+
+                    <main role="main" class="pb-3">
+                        @RenderBody()
+                    </main>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootbox.js/bootbox.min.js"></script>
+    <script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/js/sb-admin-2.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/vendor/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="~/js/demo/chart-area-demo.js"></script>
+    <script src="~/js/demo/chart-pie-demo.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+            crossorigin=""></script>
+    <script>
+        $(document).ready(function () {
+            var url = '@Url.Action("ShowMatchedReport", "User")?id=';
+            setTimeout(function () {
+                var count = 0;
+                $.ajax({
+                url: "http://localhost:5000/GetNotificationCount/@user.Id",
+                method: "GET",
+                success: function (data) {
+                    count += data
+                    $("#notifCount").text(count);
+                },
+                error: function () {
+                    $("#notifCount").text(count);
+                }
+                });
+                $.ajax({
+                    url: "https://localhost:44365/api/report/NotificationCount?Id=@user.Id",
+                method: "GET",
+                success: function (data) {
+                    count += data
+                    $("#notifCount").text(count);
+                },
+                error: function () {
+                    $("#notifCount").text(count);
+                }
+                });
+            }, 1000);
+
+            var image = "";
+            var Notifications = [];
+            var Current = [];
+            $(".getNotification").on("click", function () {
+                $("#notifCount").text("");
+                $.ajax({
+                url: "http://localhost:5000/GetNotification/@user.Id",
+                method: "GET",
+                    success: function (data) {
+
+                        const counts = {};
+                        data.forEach(function (x) { counts[x.relatedReportId] = (counts[x.relatedReportId] || 0) + 1; });
+
+
+                        for (var response in counts) {
+                            var notiyfications = [];
+
+                            data.forEach(obj => {
+
+                                if (obj.relatedReportId == response)
+                                    notiyfications.push(obj);
+                            })
+
+
+
+                            var parameters = [];
+                            notiyfications.forEach(response => {
+                                switch (true) {
+                                    case response.similarity > 90:
+                                        parameters.push({ "order": 1, "id": response.reportid, "relatedId": response.relatedReportId});
+                                        break;
+                                    case response.similarity > 80:
+                                        parameters.push({ "order": 2, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 70:
+                                        parameters.push({ "order": 3, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 60:
+                                        parameters.push({ "order": 4, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 50:
+                                        parameters.push({ "order": 5, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 40:
+                                        parameters.push({ "order": 6, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 30:
+                                        parameters.push({ "order": 7, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 20:
+                                        parameters.push({ "order": 8, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 10:
+                                        parameters.push({ "order": 9, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+                                    case response.similarity > 0:
+                                        parameters.push({ "order": 10, "id": response.reportid, "relatedId": response.relatedReportId });
+                                        break;
+
+                                }
+
+                            })
+
+                            console.log(notiyfications);
+                            for (var n in notiyfications) {
+                                if (!Notifications.some(e => e.id == notiyfications[n].id)) {
+
+                                    var parametersToString = "";
+                                    var updiv1 = document.createElement("div");
+                                    var updiv2 = document.createElement("div");
+                                    var downdiv1 = document.createElement("div");
+                                    var downdiv2 = document.createElement("div");
+                                    var i = document.createElement("div");
+                                    var span = document.createElement("span");
+                                    var a = document.createElement("a");
+                                    a.className = "dropdown-item d-flex align-items-center arrange js-go";
+                                    a.id = "before";
+                                    a.href = url + JSON.stringify(parameters);
+                                    a.dataset.id = notiyfications[n].id;
+
+
+                                    updiv1.className = "mr-3";
+                                    updiv2.className = "icon-circle bg-primary";
+                                    i.className = "fas fa-bullhorn text-white";
+                                    downdiv2.className = "small text-gray-500";
+                                    span.className = "font-weight-bold";
+                                    parametersToString = JSON.stringify(parameters);
+                                    console.log(JSON.stringify(parameters));
+
+
+                                    downdiv2.innerText = notiyfications[n].date;
+                                    span.innerText = notiyfications[n].notification
+                                    Notifications.push(notiyfications[n]);
+                                    updiv2.appendChild(i);
+                                    downdiv1.appendChild(downdiv2);
+                                    downdiv1.appendChild(span);
+                                    updiv1.appendChild(updiv2);
+                                    a.appendChild(updiv1);
+                                    a.appendChild(downdiv1);
+                                    var before = document.getElementById("before");
+                                    document.querySelector(".appends").insertBefore(a, before);
+                                }
+                                break;
+                            }
+                    }
+                },
+                error: function () {
+
+                }
+                });
+
+                $.ajax({
+                    url: "https://localhost:44365/api/report/GetNotification?Id=@user.Id",
+                method: "GET",
+                success: function (data) {
+                    var url = "/User/ReportComment?id="
+                    for (var index in data) {
+
+                        if (Current.indexOf(data[index].id)==-1) {
+                            console.log(data[index]);
+
+                            Current.push(data[index].id);
+                            var updiv1 = document.createElement("div");
+                            var updiv2 = document.createElement("div");
+                            var downdiv1 = document.createElement("div");
+                            var downdiv2 = document.createElement("div");
+                            var i = document.createElement("div");
+                            var span = document.createElement("span");
+                            var a = document.createElement("a");
+                            a.className = "dropdown-item d-flex align-items-center arrange js-go";
+                            a.id = "before";
+                            a.href = url + data[index].commentID + "&reply=" + data[index].reply;
+                            a.dataset.id = data[index].id;
+                            updiv1.className = "mr-3";
+                            updiv2.className = "icon-circle bg-primary";
+                            i.className = "fas fa-bullhorn text-white";
+                            downdiv2.className = "small text-gray-500";
+                            span.className = "font-weight-bold";
+                            downdiv2.innerText = data[index].date;
+                            span.innerText = data[index].description;
+                            updiv2.appendChild(i);
+                            downdiv1.appendChild(downdiv2);
+                            downdiv1.appendChild(span);
+                            updiv1.appendChild(updiv2);
+                            a.appendChild(updiv1);
+                            a.appendChild(downdiv1);
+                            var before = document.getElementById("before");
+                            document.querySelector(".appends").insertBefore(a, before);
+
+                        }
+
+                    }
+                },
+                    error: function () {
+
+                    $("#notifCount").text(count);
+                }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        // Initialize the map and assign it to a variable for later use
+        var map = L.map('map', {
+            // Set latitude and longitude of the map center (required)
+            center: [30.0382300000001, 31.2113000000001],
+            // Set the initial zoom level, values 0-18, where 0 is most zoomed-out (required)
+            zoom: 10
+        });
+
+        L.control.scale().addTo(map);
+
+        // Create a Tile Layer and add it to the map
+        //var tiles = new L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        L.circle([30.01054, 31.2113000000001], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 700
+        }).addTo(map);
+        L.circle([30.01054, 31.16465], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 700
+        }).addTo(map);
+        var searchControl = new L.esri.Controls.Geosearch().addTo(map);
+
+        var results = new L.LayerGroup().addTo(map);
+
+        searchControl.on('results', function (data) {
+            results.clearLayers();
+            for (var i = data.results.length - 1; i >= 0; i--) {
+                results.addLayer(L.marker(data.results[i].latlng));
+            }
+        });
+
+
+        setTimeout(function () { $('.pointer').fadeOut('slow'); }, 3400);
+    </script>
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+    @await Component.InvokeAsync("Notyf")
+</body>
+</html>

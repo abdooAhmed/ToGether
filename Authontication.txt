@@ -1,0 +1,324 @@
+public IActionResult Register()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterForm registerForm)
+        {
+            var User = new AccountInfo
+            {
+                UserName = registerForm.UserName,
+                Email = registerForm.Email,
+                PhoneNumber = registerForm.Phone,
+                Country = registerForm.Country,
+                City = registerForm.City,
+                District = registerForm.District,
+
+
+            };
+            var result = await userManager.CreateAsync(User, registerForm.Password);
+            
+            if (result.Succeeded){
+                result = await userManager.AddToRoleAsync(User, "User");
+                
+                var Code = await userManager.GenerateEmailConfirmationTokenAsync(User);
+                var Link = Url.Action(nameof(VerifyEmail),"Account", new { UserId =User.Id, Code },Request.Scheme);
+
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("GP_Project", "abdooooahmed7@gmail.com"));
+                message.To.Add(new MailboxAddress(User.UserName, User.Email));
+                message.Subject = "Email Confirmation";
+                message.Body = new TextPart("html")
+                {
+                    Text = $"<a href=\"{Link}\">Verify Email</a>"
+                };
+                using(var client = new SmtpClient())
+                {
+                    client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Ssl2 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
+                    client.CheckCertificateRevocation = false;
+                    client.Connect("smtp.gmail.com", 465, true);
+                    client.Authenticate("abdooooahmed7@gmail.com","Samara24121977");
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+                
+                return RedirectToAction("EmailVerification");
+            }
+
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> VerifyEmail(string UserId,string Code)
+        {
+            var user =await userManager.FindByIdAsync(UserId);
+            if (user == null) return BadRequest();
+            var result = await userManager.ConfirmEmailAsync(user, Code);
+            if (result.Succeeded)
+            {
+                return View();
+            }
+            return BadRequest();
+        }
+
+        public IActionResult EmailVerification() => View();
+
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        // GET: AccountController
+        public async Task<IActionResult> Login(string returnUrl)
+        {
+            LoginView loginView = new LoginView
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+            return View(loginView);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        // GET: AccountController
+        public async Task<IActionResult> Login(LoginView loginView)
+        {
+            var user = await userManager.FindByEmailAsync(loginView.Email);
+
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(user, loginView.Password, isPersistent: loginView.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+
+                    var result1 = await userManager.UpdateAsync(user);
+                    if (!string.IsNullOrEmpty(loginView.ReturnUrl) && Url.IsLocalUrl(loginView.ReturnUrl))
+                    {
+                        return Redirect(loginView.ReturnUrl);
+                    }
+                    else
+                    {
+                        
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+            }
+            ModelState.AddModelError("", "Invalid username/password.");
+            
+
+
+            return View(loginView);
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult ExternalLogin(string provider, string returnUrl)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
+                                new { ReturnUrl = returnUrl });
+            var properties = signInManager
+                .ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+
+
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+
+            LoginView loginViewModel = new LoginView
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins =
+                        (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+
+            if (remoteError != null)
+            {
+                ModelState
+                    .AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+
+                return View("Login", loginViewModel);
+            }
+
+            // Get the login information about the user from the external login provider
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState
+                    .AddModelError(string.Empty, "Error loading external login information.");
+
+                return View("Login", loginViewModel);
+            }
+
+            // If the user already has a login (i.e if there is a record in AspNetUserLogins
+            // table) then sign-in the user with this external login provider
+            var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
+                info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
+            if (signInResult.Succeeded)
+            {
+                return LocalRedirect(returnUrl);
+            }
+            // If there is no record in AspNetUserLogins table, the user may not have
+            // a local account
+            else
+            {
+                // Get the email claim value
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+                if (email != null)
+                {
+                    // Create a new user without password if we do not have a user already
+                    var user = await userManager.FindByEmailAsync(email);
+
+                    if (user == null)
+                    {
+                        user = new AccountInfo
+                        {
+                            UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        };
+
+                        await userManager.CreateAsync(user);
+                    }
+
+                    // Add a login (i.e insert a row for the user in AspNetUserLogins table)
+                    await userManager.AddLoginAsync(user, info);
+                    await signInManager.SignInAsync(user, isPersistent: false);
+
+                    return LocalRedirect(returnUrl);
+                }
+
+                // If we cannot find the user email we cannot continue
+                ViewBag.ErrorTitle = $"Email claim not received from: {info.LoginProvider}";
+                ViewBag.ErrorMessage = "Please contact support on Pragim@PragimTech.com";
+
+                return View("Error");
+            }
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordView model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Find the user by email
+                var user = await userManager.FindByEmailAsync(model.Email);
+                // If the user is found AND Email is confirmed
+                if (user != null && await userManager.IsEmailConfirmedAsync(user))
+                {
+                    // Generate the reset password token
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+                    // Build the password reset link
+                    var passwordResetLink = Url.Action("ResetPassword", "Account",
+                            new { email = model.Email, token = token }, Request.Scheme);
+
+                    // Log the password reset link
+
+
+                    var message = new MimeMessage();
+                    message.From.Add(new MailboxAddress("GP_Project", "abdooooahmed7@gmail.com"));
+                    message.To.Add(new MailboxAddress(user.UserName, user.Email));
+                    message.Subject = "Email Confirmation";
+                    message.Body = new TextPart("html")
+                    {
+                        Text = $"<a href=\"{passwordResetLink}\">Verify Email</a>"
+                    };
+                    using (var client = new SmtpClient())
+                    {
+                        client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Ssl2 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
+                        client.CheckCertificateRevocation = false;
+                        client.Connect("smtp.gmail.com", 465, true);
+                        client.Authenticate("abdooooahmed7@gmail.com", "Samara24121977");
+                        client.Send(message);
+                        client.Disconnect(true);
+                    }
+
+
+
+
+                    // Send the user to Forgot Password Confirmation view
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // To avoid account enumeration and brute force attacks, don't
+                // reveal that the user does not exist or is not confirmed
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+
+        public ActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            // If password reset token or email is null, most likely the
+            // user tried to tamper the password reset link
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordView model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Find the user by email
+                var user = await userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    // reset the user password
+                    var result = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation");
+                    }
+                    // Display validation errors. For example, password reset token already
+                    // used to change the password or password complexity rules not met
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+
+                // To avoid account enumeration and brute force attacks, don't
+                // reveal that the user does not exist
+                return View("ResetPasswordConfirmation");
+            }
+            // Display validation errors if model state is not valid
+            return View(model);
+        }
+        public ActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }

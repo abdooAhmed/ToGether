@@ -1,0 +1,143 @@
+﻿@model IEnumerable<GpProject.ViewModels.UserMangerViewModel>
+@using AspNetCoreHero.ToastNotification.Abstractions;
+@inject INotyfService _notyfService;
+
+@{
+    ViewData["Title"] = "ManageUsers";
+    Layout = "~/Views/Shared/UserManager.cshtml";
+
+}
+
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Users table</h6>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Role</th>
+
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Function</th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div>
+                                                @if (user.User.Img == null)
+                                                {
+
+                                                    <img src="~/vendor/download.png" class="avatar avatar-sm me-3" alt="user1">
+
+                                                }
+                                                else
+                                                {
+                                                    var Userbase64 = Convert.ToBase64String(user.User.Img);
+                                                    var UserimgSrc = String.Format("data:image/png;base64,{0}", Userbase64);
+                                                    <img src="@UserimgSrc" class="avatar avatar-sm me-3" alt="user1">
+
+                                                }
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">@user.User.UserName</h6>
+                                                <p class="text-xs text-secondary mb-0">@user.User.Email</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-xs font-weight-bold">@user.Role</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        @if (user.User.Status)
+                                        {
+
+
+                                            <span class="badge badge-sm bg-gradient-success">Online</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-sm bg-gradient-secondary">Offline</span>
+                                        }
+
+
+                                    </td>
+
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">@user.User.City</p>
+                                        <p class="text-xs text-secondary mb-0">@user.User.District</p>
+                                    </td>
+
+                                    <td class="align-middle">
+                                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs js-delete" data-id="@user.User.Id">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(".js-delete").on("click", function () {
+                var btn = $(this);
+                console.log("done");
+                bootbox.confirm({
+                    message: "This is a confirm with custom button text and color! Do you like it?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: "/api/AdminApi/?id=" + btn.data("id"),
+                                method: "DELETE",
+                                success: function (data) {
+                                    btn.parents("tr").fadeOut();
+                                },
+                                error: function () {
+                                    alert("error happend");
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+}
+
+
+
